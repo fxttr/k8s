@@ -1,0 +1,3 @@
+module "metallb" {
+  source = "./metallb"
+}
