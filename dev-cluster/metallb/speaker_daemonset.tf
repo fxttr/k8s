@@ -1,12 +1,11 @@
-# Create Speaker DaemonSet
-resource "kubernetes_daemonset" "speaker" {
+resource "kubernetes_daemonset" "metallb_speaker" {
   metadata {
+    name      = "speaker"
+    namespace = "metallb-system"
     labels = {
       app       = "metallb"
       component = "speaker"
     }
-    name      = "speaker"
-    namespace = kubernetes_namespace.metallb_system.metadata.0.name
   }
 
   spec {
@@ -41,8 +40,14 @@ resource "kubernetes_daemonset" "speaker" {
 
         toleration {
           key      = "node-role.kubernetes.io/master"
-          effect   = "NoSchedule"
           operator = "Exists"
+          effect   = "NoSchedule"
+        }
+
+        toleration {
+          key      = "node-role.kubernetes.io/control-plane"
+          operator = "Exists"
+          effect   = "NoSchedule"
         }
 
         container {
@@ -59,6 +64,15 @@ resource "kubernetes_daemonset" "speaker" {
             value_from {
               field_ref {
                 field_path = "spec.nodeName"
+              }
+            }
+          }
+
+          env {
+            name = "METALLB_POD_NAME"
+            value_from {
+              field_ref {
+                field_path = "metadata.name"
               }
             }
           }
@@ -87,32 +101,32 @@ resource "kubernetes_daemonset" "speaker" {
           }
 
           env {
-            name = "METALLB_ML_SECRET_KEY"
-            value_from {
-              secret_key_ref {
-                name = "memberlist"
-                key  = "secretkey"
-              }
+            name  = "METALLB_ML_SECRET_KEY_PATH"
+            value = "/etc/ml_secret_key"
+          }
+
+          liveness_probe {
+            http_get {
+              path = "/metrics"
+              port = "monitoring"
             }
+            initial_delay_seconds = 10
+            period_seconds        = 10
+            success_threshold     = 1
+            failure_threshold     = 3
+            timeout_seconds       = 1
           }
 
-          port {
-            name           = "monitoring"
-            container_port = 7472
-            host_port      = 7472
-          }
-
-          port {
-            name           = "memberlist-tcp"
-            container_port = 7946
-            # host_port      = 7946
-          }
-
-          port {
-            name           = "memberlist-udp"
-            protocol       = "UDP"
-            container_port = 7946
-            # host_port      = 7946
+          readiness_probe {
+            http_get {
+              path = "/metrics"
+              port = "monitoring"
+            }
+            initial_delay_seconds = 10
+            period_seconds        = 10
+            success_threshold     = 1
+            failure_threshold     = 3
+            timeout_seconds       = 1
           }
 
           security_context {
@@ -124,6 +138,49 @@ resource "kubernetes_daemonset" "speaker" {
             read_only_root_filesystem = true
           }
 
+          volume_mount {
+            name       = "memberlist"
+            mount_path = "/etc/ml_secret_key"
+            read_only  = true
+          }
+
+          volume_mount {
+            name       = "metallb-excludel2"
+            mount_path = "/etc/metallb"
+            read_only  = true
+          }
+
+          port {
+            container_port = 7472
+            name           = "monitoring"
+          }
+
+          port {
+            container_port = 7946
+            name           = "memberlist-tcp"
+          }
+
+          port {
+            container_port = 7946
+            name           = "memberlist-udp"
+            protocol       = "UDP"
+          }
+        }
+
+        volume {
+          name = "memberlist"
+          secret {
+            secret_name = "memberlist"
+            default_mode = "0420"
+          }
+        }
+
+        volume {
+          name = "metallb-excludel2"
+          config_map {
+            name         = "metallb-excludel2"
+            default_mode = "0256"
+          }
         }
       }
     }

@@ -1,12 +1,11 @@
-# Create Controller Deployment
-resource "kubernetes_deployment" "controller" {
+resource "kubernetes_deployment" "metallb_controller" {
   metadata {
+    name      = "controller"
+    namespace = kubernetes_namespace.metallb_system.metadata.0.name
     labels = {
       app       = "metallb"
       component = "controller"
     }
-    name      = "controller"
-    namespace = kubernetes_namespace.metallb_system.metadata.0.name
   }
 
   spec {
@@ -32,18 +31,20 @@ resource "kubernetes_deployment" "controller" {
       }
 
       spec {
-
-        automount_service_account_token  = true # override Terraform's default false - https://github.com/kubernetes/kubernetes/issues/27973#issuecomment-462185284
-        service_account_name             = "controller"
+        automount_service_account_token  = true
+        service_account_name          = "controller"
         termination_grace_period_seconds = 0
+
+        security_context {
+          fs_group      = 65534
+          run_as_non_root = true
+          run_as_user   = 65534
+        }
+
         node_selector = merge(
           { "kubernetes.io/os" = "linux" },
           var.controller_node_selector
         )
-        security_context {
-          run_as_non_root = true
-          run_as_user     = 65534
-        }
 
         container {
           name  = "controller"
@@ -52,6 +53,7 @@ resource "kubernetes_deployment" "controller" {
           args = [
             "--port=7472",
             "--log-level=info",
+            "--tls-min-version=VersionTLS12"
           ]
 
           env {
@@ -64,17 +66,53 @@ resource "kubernetes_deployment" "controller" {
             value = "controller"
           }
 
-          port {
-            name           = "monitoring"
-            container_port = 7472
+          liveness_probe {
+            http_get {
+              path = "/metrics"
+              port = "monitoring"
+            }
+            initial_delay_seconds = 10
+            period_seconds        = 10
+            success_threshold     = 1
+            failure_threshold     = 3
+            timeout_seconds       = 1
+          }
+
+          readiness_probe {
+            http_get {
+              path = "/metrics"
+              port = "monitoring"
+            }
+            initial_delay_seconds = 10
+            period_seconds        = 10
+            success_threshold     = 1
+            failure_threshold     = 3
+            timeout_seconds       = 1
           }
 
           security_context {
             allow_privilege_escalation = false
             capabilities {
-              drop = ["ALL"]
+              drop = ["all"]
             }
             read_only_root_filesystem = true
+          }
+
+          port {
+            container_port = 7472
+            name           = "monitoring"
+          }
+
+          port {
+            container_port = 9443
+            name           = "webhook-server"
+            protocol       = "TCP"
+          }
+
+          volume_mount {
+            name       = "cert"
+            mount_path = "/tmp/k8s-webhook-server/serving-certs"
+            read_only  = true
           }
         }
 
@@ -86,6 +124,14 @@ resource "kubernetes_deployment" "controller" {
             operator           = lookup(toleration.value, "operator", null)
             value              = lookup(toleration.value, "value", null)
             toleration_seconds = lookup(toleration.value, "toleration_seconds", null)
+          }
+        }
+
+        volume {
+          name = "cert"
+          secret {
+            secret_name = "metallb-webhook-cert"
+            default_mode = "0420"
           }
         }
       }
