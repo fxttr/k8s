@@ -179,7 +179,7 @@ resource "kubernetes_daemonset" "metallb_speaker" {
           name = "metallb-excludel2"
           config_map {
             name         = "metallb-excludel2"
-            default_mode = "0256"
+            default_mode = "0400"
           }
         }
       }

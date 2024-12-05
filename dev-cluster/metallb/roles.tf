@@ -1,11 +1,22 @@
-# Create Config Watcher Role
-resource "kubernetes_role" "config_watcher" {
+resource "kubernetes_role" "pod_lister" {
   metadata {
+    name      = "pod-lister"
+    namespace = "metallb-system"
     labels = {
       app = "metallb"
     }
-    name      = "config-watcher"
-    namespace = kubernetes_namespace.metallb_system.metadata.0.name
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["pods"]
+    verbs      = ["list", "get"]
+  }
+
+  rule {
+    api_groups = [""]
+    resources  = ["secrets"]
+    verbs      = ["get", "list", "watch"]
   }
 
   rule {
@@ -13,24 +24,44 @@ resource "kubernetes_role" "config_watcher" {
     resources  = ["configmaps"]
     verbs      = ["get", "list", "watch"]
   }
-}
 
-# Create Pod Lister Role
-resource "kubernetes_role" "pod_lister" {
-  metadata {
-    labels = {
-      app = "metallb"
-    }
-    name      = "pod-lister"
-    namespace = kubernetes_namespace.metallb_system.metadata.0.name
+  rule {
+    api_groups = ["metallb.io"]
+    resources  = ["bfdprofiles"]
+    verbs      = ["get", "list", "watch"]
   }
 
   rule {
-    api_groups = [""]
-    resources  = ["pods"]
-    verbs      = ["list"]
+    api_groups = ["metallb.io"]
+    resources  = ["bgppeers"]
+    verbs      = ["get", "list", "watch"]
+  }
+
+  rule {
+    api_groups = ["metallb.io"]
+    resources  = ["l2advertisements"]
+    verbs      = ["get", "list", "watch"]
+  }
+
+  rule {
+    api_groups = ["metallb.io"]
+    resources  = ["bgpadvertisements"]
+    verbs      = ["get", "list", "watch"]
+  }
+
+  rule {
+    api_groups = ["metallb.io"]
+    resources  = ["ipaddresspools"]
+    verbs      = ["get", "list", "watch"]
+  }
+
+  rule {
+    api_groups = ["metallb.io"]
+    resources  = ["communities"]
+    verbs      = ["get", "list", "watch"]
   }
 }
+
 
 resource "kubernetes_role" "controller" {
   metadata {
