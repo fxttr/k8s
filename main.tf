@@ -1,6 +1,5 @@
 module "dev-cluster" {
   source = "./dev-cluster"
-  github_token = var.github_token
 }
 
 terraform {
@@ -9,9 +8,15 @@ terraform {
       source = "hashicorp/kubernetes"
       version = ">=2.24.0"
     }
+    sops = {
+      source = "carlpett/sops"
+      version = ">=1.1.1"
+    }
   }
 }
 
 provider "kubernetes" {
  config_path = "~/.kube/config"
 }
+
+provider "sops" {}

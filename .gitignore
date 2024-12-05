@@ -1,2 +1,14 @@
 .direnv/
 .terraform/
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# do not ignore encrypted tfstate files, with .enc inside
+!*.enc.tfstate
+!*.enc.tfstate.*
+
+# unless it is decrypted
+*.decrypted*tfstate
+*.decrypted*tfstate.*

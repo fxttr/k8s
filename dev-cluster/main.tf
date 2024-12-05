@@ -11,5 +11,14 @@ module "flux-cesium" {
   source = "./flux"
   github_org = "fxttr"
   github_repository = "cesium"
-  github_token = var.github_token
+  github_token = data.sops_file.sops-secret.data["github_token"]
+}
+
+terraform {
+  required_providers {
+    sops = {
+      source = "carlpett/sops"
+      version = ">=1.1.1"
+    }
+  }
 }

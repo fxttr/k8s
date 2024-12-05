@@ -20,8 +20,11 @@
         ];
 
         shellHook = ''
-          echo "Injecting secrets"
-          export TF_VAR_github_token=$(sops decrypt ./secrets/dev-cluster.yaml | grep github_token: | sed -e 's/github_token: //')
+          function tofu {
+            sops --decrypt terraform.enc.tfstate > terraform.tfstate
+            tofu $@
+            sops --encrypt terraform.tfstate > terraform.enc.tfstate
+          }
         '';
       };
     });

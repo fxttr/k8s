@@ -1,6 +1,21 @@
 # This file is maintained automatically by "tofu init".
 # Manual edits may be lost in future updates.
 
+provider "registry.opentofu.org/carlpett/sops" {
+  version     = "1.1.1"
+  constraints = ">= 1.1.1"
+  hashes = [
+    "h1:hqyownSt8teS7g0+XDOxmAtuAHB5kDNQkW1voBhLmZU=",
+    "zh:175ec198e1b4d1cad1ae559ebe8cdf574617805010c22dfb8af93a2057ba8332",
+    "zh:2b550b2372f71408e7b47b099f314d981bbb82b263cb55248a36a9af8afd44a1",
+    "zh:684544ed3460c34585b090b5de1d4e0caf8eba8e6ba50ad0734cda818a6c86f0",
+    "zh:6ab656d3f3645b8158769f34c16820523a621b9e735c1b3233cecf010ac61dda",
+    "zh:6b1f0007569ea36903c9b2b1b114c3cec7c163d9b83946362c3e165e255f64e7",
+    "zh:7d562f2fc76c954f974f2745557059a4d33dacb8d46e9f1cf09323348dcf5ddc",
+    "zh:cc7e97d8b55ebd90a4c1424cf9cb930af76e98a11c6eeb07e51d648369859fa1",
+  ]
+}
+
 provider "registry.opentofu.org/fluxcd/flux" {
   version     = "1.4.0"
   constraints = ">= 1.2.0"
@@ -24,20 +39,20 @@ provider "registry.opentofu.org/fluxcd/flux" {
 }
 
 provider "registry.opentofu.org/hashicorp/kubernetes" {
-  version     = "2.24.0"
-  constraints = "2.24.0"
+  version     = "2.34.0"
+  constraints = ">= 2.24.0"
   hashes = [
-    "h1:3Pc2TQxlUlOy6MjiqtfSmhxxddUSD5nFN9/+FdDW67Q=",
-    "zh:1c4745c8944d2cc736345c061762d36e8272d2f437d6f28def8c6b3852817013",
-    "zh:389b2677c054361af7d14ecec89fea62eedaac55f657ebe357ea532832ff5c03",
-    "zh:38abe75a855f8e5a62fbf680da649b95b85fa28711482ad86daeba4e57420ac0",
-    "zh:40e2322bfee72c71c684838299c9c14d50e9b8674d076c0b860360a1527059ff",
-    "zh:5ff1a85afbb2870e87a89f88275860385d1b8f65e66cfee77a31ffbe2f1e3fda",
-    "zh:9030fd231ec608cdef41eccd706fd0041837688cbb0da27c049b35100fd01e31",
-    "zh:9108d1959b468af928293a471cd191683a5893027ac5768ea2ee4cc33aabeff8",
-    "zh:ad7761b10c268ed41e651a122d0ee12f945126d5af163ffebc1c15852677e545",
-    "zh:c2711acd6498f88456ac6cf88ec49c937344861725a5756b6858688ae3bb460e",
-    "zh:d28ddf12ea5057f7afa2140839e38a7fa8545f456ed25eb7ab3a436093ab919a",
+    "h1:ii9zWnkeN3QfUFPSKkTi7xp0Vd645twuNP4RCOYlj28=",
+    "zh:076f2cddac107b8cebae85980801e14cbcab0a95e542b0db47403d881a0b4276",
+    "zh:1fb388b1e6a8096ebada7557be79734dae95b4d8de2c6668bfd27f1d1182159e",
+    "zh:32e39913423bc912b5221d29af21681afdf765dc6b21649a5c93ed02ec5b9bc6",
+    "zh:4fd19efdc085c8216ebda8d73526cbcfc68ce65c5e0b7dc67675f5fa22b2d8c2",
+    "zh:66017d34ea30aee60db4cca33da5558e62568137342c9f5ce80aca3aa1c45861",
+    "zh:7157100f26f1c9c1416d4244a9aaf036363ccf5a642507da9a05eee970fcb2b6",
+    "zh:9454cb468b5524f5e631e436362ee07e00524983a631aaf66110853e59930f49",
+    "zh:b89017bb25ec6b8eb00218a06e801f82e9b3f0b24dcef34f1934f72dd061a3f5",
+    "zh:d2f24facf3322b38efdd26f0bed7b8e901b7a8c6432a2d1be46d21da7ce6826e",
+    "zh:f1421b4baa47f8221bca5fb557df6059dfe7dcac373f797ec5e9690f11c946d7",
   ]
 }
 
