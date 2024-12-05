@@ -14,15 +14,20 @@
           #!/usr/bin/env bash
           set -euo pipefail
 
-          if [ ! -f terraform.enc.tfstate ]; then
-            ${pkgs.opentofu}/bin/tofu "$@"
-            sops --encrypt terraform.tfstate > terraform.enc.tfstate
-            exit 1
+          if [ -f terraform.enc.tfstate ]; then
+            sops --decrypt terraform.enc.tfstate > terraform.tfstate
           fi
 
-          sops --decrypt terraform.enc.tfstate > terraform.tfstate
+          if [ -f terraform.enc.tfstate.backup ]; then
+            sops --decrypt terraform.enc.tfstate.backup > terraform.tfstate.backup
+          fi
+          
           ${pkgs.opentofu}/bin/tofu "$@"
+
           sops --encrypt terraform.tfstate > terraform.enc.tfstate
+          sops --encrypt terraform.tfstate.backup > terraform.enc.tfstate.backup
+
+          rm -f terraform.tfstate terraform.tfstate.backup
         '';
       in
       {
