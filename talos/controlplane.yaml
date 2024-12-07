@@ -193,7 +193,7 @@ machine:
     #         #     password: password # Optional registry authentication.
 
     features:
-        rbac: true.
+        rbac: true
         stableHostname: true # Enable stable default hostname.
         apidCheckExtKeyUsage: true # Enable checks for extended key usage of client certificates in apid.
         diskQuotaSupport: true # Enable XFS project quota support for EPHEMERAL partition and user disks.

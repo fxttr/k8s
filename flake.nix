@@ -12,8 +12,6 @@
         pkgs = import nixpkgs { inherit system; };
         tofu = pkgs.writeShellScriptBin "tofu" ''
           #!/usr/bin/env bash
-          set -euo pipefail
-
           if [ -f terraform.enc.tfstate ]; then
             sops --decrypt terraform.enc.tfstate > terraform.tfstate
           fi
@@ -24,9 +22,11 @@
           
           ${pkgs.opentofu}/bin/tofu "$@"
 
-          sops --encrypt terraform.tfstate > terraform.enc.tfstate
-          sops --encrypt terraform.tfstate.backup > terraform.enc.tfstate.backup
-
+          if [ '$@' != "plan" ]; then
+            sops --encrypt terraform.tfstate > terraform.enc.tfstate
+            sops --encrypt terraform.tfstate.backup > terraform.enc.tfstate.backup
+          fi
+          
           rm -f terraform.tfstate terraform.tfstate.backup
         '';
       in
@@ -37,6 +37,10 @@
             pkgs.k9s
             pkgs.nano
             pkgs.sops
+            pkgs.talosctl
+            pkgs.kubectl
+            pkgs.kubernetes-helm
+            pkgs.fluxcd
           ];
         };
       });

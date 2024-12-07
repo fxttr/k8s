@@ -5,14 +5,8 @@ variable "github_token" {
   default     = ""
 }
 
-variable "github_org" {
-  description = "GitHub organization"
+variable "namespace" {
+  description = "Namespace for Flux"
   type        = string
-  default     = ""
-}
-
-variable "github_repository" {
-  description = "GitHub repository"
-  type        = string
-  default     = ""
+  default     = "flux-system"
 }
