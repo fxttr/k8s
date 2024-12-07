@@ -1,5 +1,5 @@
 module "dev-cluster" {
-  source = "./dev-cluster"
+  source = "./dev-cluster/tf"
 }
 
 terraform {
