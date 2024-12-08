@@ -2,11 +2,16 @@ keys:
   - &marrero age1jjyun32za8n4ehrpmw4uz0xpy8tlss2n06e4zmdpyjw3que7lf8qardgtu
   - &marrero age1dwu9ccy3t86c4tgd4ufs4jkmv572jfflkvdejm5kvjf95r3qsgus847qgd 
 creation_rules:
-  - path_regex: secrets/[^/]+\.yaml$
+  - path_regex: .*.yaml
+    encrypted_regex: '^(data|stringData)$'
     key_groups:
       - age:
         - *marrero
   - path_regex: (\.enc)?\.tfstate(\.backup)?$
+    key_groups:
+      - age:
+        - *marrero
+  - path_regex: secrets/[^/]+\.yaml$
     key_groups:
       - age:
         - *marrero

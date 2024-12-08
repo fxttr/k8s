@@ -22,3 +22,7 @@ spec:
     kind: GitRepository
     name: cesium
   targetNamespace: cesium
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
