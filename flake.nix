@@ -29,15 +29,19 @@
           
           rm -f terraform.tfstate terraform.tfstate.backup
         '';
+        talosctl = pkgs.writeShellScriptBin "talosctl" ''
+          #!/usr/bin/env bash
+          talosctl "$@" -n 192.168.0.201 --talosconfig=./talos/controlplane.yaml
+        '';
       in
       {
         devShell = pkgs.mkShell {
           buildInputs = [
             tofu
+            talosctl
             pkgs.k9s
             pkgs.nano
             pkgs.sops
-            pkgs.talosctl
             pkgs.kubectl
             pkgs.kubernetes-helm
             pkgs.fluxcd

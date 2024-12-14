@@ -3,7 +3,7 @@ keys:
   - &marrero age1dwu9ccy3t86c4tgd4ufs4jkmv572jfflkvdejm5kvjf95r3qsgus847qgd 
 creation_rules:
   - path_regex: .*.yaml
-    encrypted_regex: '^(data|stringData)$'
+    encrypted_regex: '^(data|stringData|key|crt|secretboxEncryptionSecret|token|secret)$'
     key_groups:
       - age:
         - *marrero
@@ -11,8 +11,3 @@ creation_rules:
     key_groups:
       - age:
         - *marrero
-  - path_regex: secrets/[^/]+\.yaml$
-    key_groups:
-      - age:
-        - *marrero
-
