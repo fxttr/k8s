@@ -3,10 +3,18 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
+
+    code-nix = {
+      url = "github:fxttr/code-nix";
+      inputs = {
+        nixpkgs.follows = "nixpkgs";
+        extensions.follows = "nix-vscode-extensions";
+      };
+    };
   };
 
-  outputs = { self, nixpkgs, sops-nix, flake-utils }:
+  outputs = { self, nixpkgs, flake-utils, ... }@inputs:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs { inherit system; };
@@ -29,22 +37,22 @@
           
           rm -f terraform.tfstate terraform.tfstate.backup
         '';
-        talosctl = pkgs.writeShellScriptBin "talosctl" ''
-          #!/usr/bin/env bash
-          talosctl "$@" -n 192.168.0.201 --talosconfig=./talos/controlplane.yaml
-        '';
+        code = inputs.code-nix.packages.${system}.default;
       in
       {
         devShell = pkgs.mkShell {
           buildInputs = [
             tofu
-            talosctl
+            pkgs.talosctl
             pkgs.k9s
             pkgs.nano
             pkgs.sops
             pkgs.kubectl
             pkgs.kubernetes-helm
             pkgs.fluxcd
+            (code {
+              profiles.nix.enable = true;
+            })
           ];
         };
       });

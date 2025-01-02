@@ -1,7 +1,7 @@
-module "metallb" {
-  source = "./metallb"
-  metallb_version = "0.14.8"
-}
+#module "metallb" {
+#  source = "./metallb"
+#  metallb_version = "0.14.8"
+#}
 
 module "flux" {
   source = "./flux"
